@@ -6,7 +6,6 @@ services:
       dockerfile : ./Dockerfile.fe
     env_file:
       - .env 
-    stdin_open: true
     tty: true
     ports:
       - ${REACT_PORT}:3000
@@ -25,7 +24,6 @@ services:
       dockerfile : ./Dockerfile.be
     env_file:
       - .env 
-    stdin_open: true
     tty: true
     ports:
       - ${GO_PORT}:${GO_PORT}
