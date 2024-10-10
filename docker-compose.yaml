@@ -1,0 +1,41 @@
+services:
+  fe:
+    container_name: frontend-react
+    build: 
+      context: .
+      dockerfile : ./Dockerfile.fe
+    env_file:
+      - .env 
+    stdin_open: true
+    tty: true
+    ports:
+      - ${REACT_PORT}:3000
+    volumes:
+      - ./fe/:/app/
+    expose:
+      - ${REACT_PORT}
+    networks:
+      - test
+
+
+  be:
+    container_name: backend-golang
+    build: 
+      context: .
+      dockerfile : ./Dockerfile.be
+    env_file:
+      - .env 
+    stdin_open: true
+    tty: true
+    ports:
+      - ${GO_PORT}:${GO_PORT}
+    volumes:
+      - ./be/:/app/
+    expose:
+      - ${GO_PORT}
+    networks:
+      - test
+
+networks:
+  test:
+    driver: bridge
