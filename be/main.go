@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gin-contrib/cors"
@@ -32,13 +31,41 @@ func CreateRouter() *gin.Engine {
 	}))
 
 	router.GET("/", func(c *gin.Context) {
-		// バックエンドログを標準出力
-		fmt.Println("Request received at /")
 
 		c.JSON(200, gin.H{
 			"message": "success",
 		})
 	})
+
+	// //デバイスを受け取る
+	// router.PORT("/", func(c *gin.Context) {
+
+	// 	c.JSON(200, gin.H{
+	// 		"message": "success",
+	// 	})
+	// })
+
+	//デバイス名に関してはタスクを追加するときについでに一緒に追加する
+
+	//タスク一覧を受け取る
+	router.GET("task",func(c *gin.Context)){
+
+	}
+
+	//タスクを追加する
+	router.POST("task",func(c *gin.Context)){
+
+	}
+	
+	//タスクの内容を更新する
+	router.PUT("task/:id",func(c *gin.Context)){
+
+	}
+
+	//タスクを削除する
+	router.DELETE("task/:id",func(c *gin.Context)){
+
+	}
 
 	return router
 }

@@ -4,6 +4,7 @@ RUN apk update
 WORKDIR /app
 COPY ./be/go.mod /app/go.mod
 COPY ./be/go.sum /app/go.sum
-RUN go get github.com/gin-gonic/gin
+
+RUN go mod tidy
 
 ENTRYPOINT ["go", "run","main.go"]

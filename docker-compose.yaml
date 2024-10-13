@@ -1,9 +1,9 @@
 services:
   fe:
-    container_name: frontend-react
+    container_name: fe-react
     build: 
       context: .
-      dockerfile : ./Dockerfile.fe
+      dockerfile: ./Dockerfile.fe
     env_file:
       - .env 
     tty: true
@@ -16,12 +16,11 @@ services:
     networks:
       - test
 
-
   be:
-    container_name: backend-golang
+    container_name: be-golang
     build: 
       context: .
-      dockerfile : ./Dockerfile.be
+      dockerfile: ./Dockerfile.be
     env_file:
       - .env 
     tty: true
@@ -33,7 +32,32 @@ services:
       - ${GO_PORT}
     networks:
       - test
+    depends_on:
+      - db
 
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    container_name: db-mysql
+    env_file:
+        - .env
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+    volumes:
+      - ./db/cnf/my.cnf:/etc/mysql/conf.d/my.cnf 
+      - ./db/init.d/:/docker-entrypoint-initdb.d 
+      - ./db/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Tokyo
+    networks:
+      - test
+
+  
 networks:
   test:
     driver: bridge
