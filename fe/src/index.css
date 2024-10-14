@@ -5,6 +5,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+    background-color: #043c78; /* 背景色 */
+    opacity: 0.5; /* 透明度 (0.0 ~ 1.0) */
+    color:#FFFFFF;
+  
 }
 
 code {
