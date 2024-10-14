@@ -1,7 +1,8 @@
+import PageTitle from "../components/PageTitle";
 const LogPage: React.FC = () => {
   return (
     <>
-      <div>ログ</div>
+      <PageTitle title="アクセスログ" />
     </>
   );
 };

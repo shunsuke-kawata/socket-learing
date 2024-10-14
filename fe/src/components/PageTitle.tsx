@@ -1,4 +1,5 @@
-const PageTitle = (title: string) => {
+import "../styles/components/pageTitle.css";
+const PageTitle = ({ title }: { title: string }) => {
   return (
     <>
       <div className="title-div">

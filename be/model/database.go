@@ -10,29 +10,36 @@ import (
 )
 
 type Status struct {
+	gorm.Model
 	ID         uint      `gorm:"primaryKey"`
 	StatusName string    `gorm:"size:50;not null"`
 	CreatedAt  time.Time `gorm:"autoCreateTime"`
+	UpdatedAt  time.Time `gorm:"autoUpdateTime"`
+	DeletedAt  time.Time `gorm:"autoUpdateTime"`
 }
 
 type Address struct {
+	gorm.Model
 	ID        uint      `gorm:"primaryKey"`
 	IPAddress string    `gorm:"size:39;not null;unique"` // IPアドレスに変更
+	ColorCode string    `gorm:"size:7;not null"`
 	CreatedAt time.Time `gorm:"autoCreateTime"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime"`
+	DeletedAt time.Time `gorm:"autoUpdateTime"`
 }
 
 type Task struct {
-	ID          uint    `gorm:"primaryKey"`
-	Title       string  `gorm:"size:100;not null"`
-	Description string  `gorm:"type:text"`
-	ColorCode   string  `gorm:"size:7;not null"`
-	StatusID    uint    `gorm:"not null"`             // 外部キー
-	Status      Status  `gorm:"foreignKey:StatusID"`  // リレーション
-	AddressID   uint    `gorm:"not null"`             // 外部キー
-	Address     Address `gorm:"foreignKey:AddressID"` // リレーション
-	DueDate     time.Time
+	gorm.Model
+	ID          uint      `gorm:"primaryKey"`
+	Title       string    `gorm:"size:100;not null"`
+	Description string    `gorm:"type:text"`
+	StatusID    uint      `gorm:"not null"`             // 外部キー
+	Status      Status    `gorm:"foreignKey:StatusID"`  // リレーション
+	AddressID   uint      `gorm:"not null"`             // 外部キー
+	Address     Address   `gorm:"foreignKey:AddressID"` // リレーション
 	CreatedAt   time.Time `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime"`
+	DeletedAt   time.Time `gorm:"autoUpdateTime"`
 }
 
 var db *gorm.DB
@@ -76,13 +83,22 @@ func CreateStatus(statusName string) (*Status, error) {
 	return newStatus, nil
 }
 
-// デバイス新規登録
+// IPアドレス新規登録
 func CreateAddress(ipAddress string) (*Address, error) {
-	newDevice := &Address{IPAddress: ipAddress}
-	if err := db.Debug().Create(newDevice).Error; err != nil {
+	newAddress := &Address{IPAddress: ipAddress, ColorCode: "#00FF00"}
+	if err := db.Debug().Create(newAddress).Error; err != nil {
 		return nil, err
 	}
-	return newDevice, nil
+	return newAddress, nil
+}
+
+// タスク新規登録
+func CreateTask(title string, description string, colorCode string, iPAddress string) (*Address, error) {
+	newAddress := &Task{}
+	if err := db.Debug().Create(newAddress).Error; err != nil {
+		return nil, err
+	}
+	return newAddress, nil
 }
 
 func ReadStatus() ([]Status, error) {

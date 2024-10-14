@@ -1,7 +1,9 @@
+import PageTitle from "../components/PageTitle";
+
 const TopPage: React.FC = () => {
   return (
     <>
-      <div>トップ</div>
+      <PageTitle title="トップ" />
     </>
   );
 };

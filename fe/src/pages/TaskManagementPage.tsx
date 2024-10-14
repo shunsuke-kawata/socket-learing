@@ -1,7 +1,9 @@
+import PageTitle from "../components/PageTitle";
+
 const TaskManagementPage: React.FC = () => {
   return (
     <>
-      <div>タスク一覧</div>
+      <PageTitle title="タスク管理" />
     </>
   );
 };

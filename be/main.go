@@ -17,6 +17,13 @@ type AddressParam struct {
 	IPAddress string
 }
 
+type TaskParam struct {
+	Title       string
+	Description string
+	ColorCode   string
+	IPAddress   string
+}
+
 // ルーターインスタンスを作成
 func CreateRouter() *gin.Engine {
 	// routerのインスタンスを作成
@@ -89,10 +96,52 @@ func CreateRouter() *gin.Engine {
 
 	//デバイス名に関してはタスクを追加するときについでに一緒に追加する
 
-	//タスク一覧を受け取る
-	// router.GET("task",func(c *gin.Context)){
+	// POST ステータスの追加
+	router.POST("/status", func(c *gin.Context) {
+		statusPatam := StatusParam{}
+		c.BindJSON(&statusPatam)
+		_, err := model.CreateStatus(statusPatam.StatusName)
 
-	// }
+		if err != nil {
+			c.JSON(500, err.Error())
+		} else {
+			c.JSON(201, nil)
+		}
+
+	})
+
+	// POST IPアドレスの追加
+	router.POST("/address", func(c *gin.Context) {
+		addressParam := AddressParam{}
+		c.BindJSON(&addressParam)
+		if addressParam.IPAddress == "" {
+			c.JSON(201, nil)
+			return
+		}
+		_, err := model.CreateAddress(addressParam.IPAddress)
+		fmt.Println(err)
+		if err != nil {
+			c.JSON(500, err.Error())
+		} else {
+			c.JSON(201, nil)
+		}
+
+	})
+	// POST IPアドレスの追加
+	router.POST("/task", func(c *gin.Context) {
+		taskParam := TaskParam{}
+		c.BindJSON(&taskParam)
+		_, err := model.CreateAddress(taskParam.IPAddress)
+		fmt.Println(err)
+		if err != nil {
+			c.JSON(500, err.Error())
+		} else {
+			c.JSON(201, nil)
+		}
+
+	})
+
+	//タスク一覧を受け取る
 
 	// //タスクを追加する
 	// router.POST("task",func(c *gin.Context)){

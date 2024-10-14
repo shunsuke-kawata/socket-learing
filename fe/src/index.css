@@ -3,11 +3,9 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 
-    background-color: #043c78; /* 背景色 */
-    opacity: 0.5; /* 透明度 (0.0 ~ 1.0) */
+
+  background-color: rgba(3, 21, 157, 0.8);
     color:#FFFFFF;
   
 }
