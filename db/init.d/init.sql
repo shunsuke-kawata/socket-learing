@@ -12,9 +12,9 @@ CREATE TABLE IF NOT EXISTS statuses (
 );
 
 -- デバイステーブル
-CREATE TABLE IF NOT EXISTS devices (
+CREATE TABLE IF NOT EXISTS addresses (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    mac_address VARCHAR(17) NOT NULL UNIQUE,
+    ip_address VARCHAR(39) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -25,28 +25,28 @@ CREATE TABLE IF NOT EXISTS tasks (
     description TEXT,
     color_code CHAR(7) NOT NULL,
     status_id INT NOT NULL, -- タスクの現在のステータス
-    device_id INT NOT NULL,
+    address_id INT NOT NULL,
     due_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (status_id) REFERENCES task_statuses(id),
-    FOREIGN KEY (device_id) REFERENCES devices(id)
+    FOREIGN KEY (status_id) REFERENCES statuses(id),
+    FOREIGN KEY (address_id) REFERENCES addresses(id)
 );
 
 -- タスクステータスのデフォルトデータの追加
-INSERT INTO task_statuses (status_name) VALUES ('Pending'), ('InProgress'), ('Done');
+INSERT INTO statuses (status_name) VALUES ('Pending'), ('InProgress'), ('Done');
 
 -- デバイステーブルへのテストデータの挿入
-INSERT INTO devices (mac_address)
+INSERT INTO addresses (ip_address)
 VALUES 
-    ('00:14:22:01:23:45'),
-    ('00:16:17:AB:CD:EF'),
-    ('00:1A:79:12:34:56'),
-    ('00:11:22:33:44:55'),
-    ('00:AA:BB:CC:DD:EE');
+    ('192.168.0.1'),
+    ('192.168.0.2'),
+    ('192.168.0.3'),
+    ('192.168.0.4'),
+    ('192.168.0.5');
 
 -- タスクテーブルへのテストデータの挿入
-INSERT INTO tasks (title, description, color_code, status_id, device_id, due_date)
+INSERT INTO tasks (title, description, color_code, status_id, address_id, due_date)
 VALUES 
     ('Task 1', 'Description for Task 1', '#FF5733', 1, 1, '2024-10-20'),  -- Pending
     ('Task 2', 'Description for Task 2', '#33FF57', 2, 2, '2024-10-25'),  -- InProgress

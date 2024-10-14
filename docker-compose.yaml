@@ -1,4 +1,25 @@
 services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    container_name: db-mysql
+    env_file:
+        - .env
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+    volumes:
+      - ./db/cnf/my.cnf:/etc/mysql/conf.d/my.cnf 
+      - ./db/init.d/:/docker-entrypoint-initdb.d 
+      - ./db/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Tokyo
+    networks:
+      - test
   fe:
     container_name: fe-react
     build: 
@@ -32,30 +53,11 @@ services:
       - ${GO_PORT}
     networks:
       - test
+    stdin_open: true
     depends_on:
       - db
 
-  db:
-    build:
-      context: .
-      dockerfile: Dockerfile.db
-    container_name: db-mysql
-    env_file:
-        - .env
-    ports:
-      - ${MYSQL_PORT}:${MYSQL_PORT}
-    volumes:
-      - ./db/cnf/my.cnf:/etc/mysql/conf.d/my.cnf 
-      - ./db/init.d/:/docker-entrypoint-initdb.d 
-      - ./db/data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      TZ: Asia/Tokyo
-    networks:
-      - test
+
 
   
 networks:
