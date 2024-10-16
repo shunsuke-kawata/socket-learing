@@ -1,0 +1,13 @@
+.task-list-part{
+    width: 100%;
+    height:540px;
+    background-color: #dcdcdc;
+    border-radius: 20px;
+    max-width: 380px;
+}
+
+.task-list-part-title{
+    text-align: center;
+    font-size: 24px;
+    color: #000000;
+}
