@@ -1,45 +1,47 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
 
+	"github.com/shunsuke-kawata/socket-learning/logic"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 type Status struct {
 	gorm.Model
-	ID         uint      `gorm:"primaryKey"`
-	StatusName string    `gorm:"size:50;not null"`
-	CreatedAt  time.Time `gorm:"autoCreateTime"`
-	UpdatedAt  time.Time `gorm:"autoUpdateTime"`
-	DeletedAt  time.Time `gorm:"autoUpdateTime"`
+	ID         uint           `gorm:"primaryKey"`
+	StatusName string         `gorm:"size:50;not null"`
+	CreatedAt  time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt  time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt  gorm.DeletedAt `gorm:"default:null"` // デフォルトで NULL
 }
 
 type Address struct {
 	gorm.Model
-	ID        uint      `gorm:"primaryKey"`
-	IPAddress string    `gorm:"size:39;not null;unique"` // IPアドレスに変更
-	ColorCode string    `gorm:"size:7;not null"`
-	CreatedAt time.Time `gorm:"autoCreateTime"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`
-	DeletedAt time.Time `gorm:"autoUpdateTime"`
+	ID        uint           `gorm:"primaryKey"`
+	IPAddress string         `gorm:"size:39;not null;unique"` // IPアドレスに変更
+	ColorCode string         `gorm:"size:7;not null"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"default:null"` // デフォルトで NULL
 }
 
 type Task struct {
 	gorm.Model
-	ID          uint      `gorm:"primaryKey"`
-	Title       string    `gorm:"size:100;not null"`
-	Description string    `gorm:"type:text"`
-	StatusID    uint      `gorm:"not null"`             // 外部キー
-	Status      Status    `gorm:"foreignKey:StatusID"`  // リレーション
-	AddressID   uint      `gorm:"not null"`             // 外部キー
-	Address     Address   `gorm:"foreignKey:AddressID"` // リレーション
-	CreatedAt   time.Time `gorm:"autoCreateTime"`
-	UpdatedAt   time.Time `gorm:"autoUpdateTime"`
-	DeletedAt   time.Time `gorm:"autoUpdateTime"`
+	ID          uint           `gorm:"primaryKey"`
+	Title       string         `gorm:"size:100;not null"`
+	Description string         `gorm:"type:text"`
+	StatusID    uint           `gorm:"not null"`             // 外部キー
+	Status      Status         `gorm:"foreignKey:StatusID"`  // リレーション
+	AddressID   uint           `gorm:"not null"`             // 外部キー
+	Address     Address        `gorm:"foreignKey:AddressID"` // リレーション
+	CreatedAt   time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt   gorm.DeletedAt `gorm:"default:null"` // デフォルトで NULL
 }
 
 var db *gorm.DB
@@ -84,38 +86,40 @@ func CreateStatus(statusName string) (*Status, error) {
 }
 
 // IPアドレス新規登録
-func CreateAddress(ipAddress string) (*Address, error) {
-	newAddress := &Address{IPAddress: ipAddress, ColorCode: "#00FF00"}
-	if err := db.Debug().Create(newAddress).Error; err != nil {
-		return nil, err
+func CreateAddress(iPAddress string) (*Address, error) {
+	fmt.Println("model.address", iPAddress)
+	address := &Address{}
+	// IPアドレスでAddressを検索
+	if err := db.First(address, "ip_address = ?", iPAddress).Error; err != nil {
+		// アドレスが存在しない場合、新規にレコードを追加
+		colorCodeString := logic.CreateRandomColorCode()
+		newAddress := &Address{IPAddress: iPAddress, ColorCode: colorCodeString}
+		if err := db.Debug().Create(newAddress).Error; err != nil {
+			return nil, err
+		}
+		return newAddress, nil
 	}
-	return newAddress, nil
+	// アドレスがすでに存在する場合、そのアドレスを返す
+	return address, nil
 }
 
 // タスク新規登録
 func CreateTask(title string, description string, iPAddress string) (*Task, error) {
-	address := &Address{}
-	// IPアドレスでAddressを検索
-	db.First(&address, "ip_address = ?", iPAddress)
-
-	// アドレスがデータベースにない時レコードを追加
-	if address.ID == 0 {
-		_, err := CreateAddress(iPAddress)
-		if err != nil {
-			return nil, err
-		}
+	fmt.Println("model.task", iPAddress)
+	address, err := CreateAddress(iPAddress)
+	if err != nil {
+		return nil, err
 	}
 
-	// アドレスを再度取得
-	db.First(&address, "ip_address = ?", iPAddress)
+	if address == nil {
+		return nil, errors.New("failed to create or retrieve address")
+	}
 
-	// StatusName が "Pending" の Status を取得
 	status := &Status{}
 	if err := db.First(&status, "status_name = ?", "Pending").Error; err != nil {
 		return nil, err
 	}
 
-	// 新しいタスクを作成
 	newTask := &Task{
 		Title:       title,
 		Description: description,
@@ -123,7 +127,6 @@ func CreateTask(title string, description string, iPAddress string) (*Task, erro
 		AddressID:   address.ID,
 	}
 
-	// タスクをデータベースに保存
 	if err := db.Debug().Create(newTask).Error; err != nil {
 		return nil, err
 	}
@@ -148,6 +151,22 @@ func ReadAddress() ([]Address, error) {
 		return nil, err
 	}
 	return addresses, nil
+}
+
+func ReadAddressByColorCode(colorCode string) (Address, error) {
+	address := Address{}
+	if err := db.First(&address, "color_code = ?", colorCode).Error; err != nil {
+		return address, err
+	}
+	return address, nil
+}
+
+func ReadAddressByIPAddress(ipAddress string) (Address, error) {
+	address := Address{}
+	if err := db.First(&address, "ip_address = ?", ipAddress).Error; err != nil {
+		return address, err
+	}
+	return address, nil
 }
 
 func ReadTask() ([]Task, error) {

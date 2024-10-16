@@ -20,7 +20,6 @@ type AddressParam struct {
 type TaskParam struct {
 	Title       string
 	Description string
-	ColorCode   string
 	IPAddress   string
 }
 
@@ -65,8 +64,10 @@ func CreateRouter() *gin.Engine {
 	//GET ステータス一覧
 	router.GET("/status", func(c *gin.Context) {
 		statuses, err := model.ReadStatus()
+		fmt.Println(statuses)
 		if err != nil {
 			fmt.Println(err)
+			c.JSON(500, nil)
 		} else {
 			c.JSON(200, statuses)
 			fmt.Printf("%T\n", statuses)
@@ -78,6 +79,7 @@ func CreateRouter() *gin.Engine {
 		addresses, err := model.ReadAddress()
 		if err != nil {
 			fmt.Println(err)
+			c.JSON(500, nil)
 		} else {
 			c.JSON(200, addresses)
 			fmt.Printf("%T\n", addresses)
@@ -88,6 +90,7 @@ func CreateRouter() *gin.Engine {
 		addresses, err := model.ReadTask()
 		if err != nil {
 			fmt.Println(err)
+			c.JSON(500, nil)
 		} else {
 			c.JSON(200, addresses)
 			fmt.Printf("%T\n", addresses)
@@ -111,34 +114,37 @@ func CreateRouter() *gin.Engine {
 	})
 
 	// POST IPアドレスの追加
+	// POST IPアドレスの追加
 	router.POST("/address", func(c *gin.Context) {
 		addressParam := AddressParam{}
 		c.BindJSON(&addressParam)
-		if addressParam.IPAddress == "" {
-			c.JSON(201, nil)
-			return
-		}
-		_, err := model.CreateAddress(addressParam.IPAddress)
-		fmt.Println(err)
-		if err != nil {
-			c.JSON(500, err.Error())
-		} else {
-			c.JSON(201, nil)
-		}
 
+		newAddress, err := model.CreateAddress(addressParam.IPAddress)
+		if err != nil {
+			if err.Error() == "address already exists" {
+				c.JSON(400, nil) // すでに存在する場合
+			} else {
+				c.JSON(500, err.Error()) // その他のエラー
+			}
+		} else {
+			c.JSON(201, newAddress) // 新しく作成したアドレスを返す
+		}
 	})
+
 	// POST IPアドレスの追加
+	// POST タスクの追加
 	router.POST("/task", func(c *gin.Context) {
 		taskParam := TaskParam{}
 		c.BindJSON(&taskParam)
-		_, err := model.CreateAddress(taskParam.IPAddress)
-		fmt.Println(err)
+		fmt.Println("endpoint", taskParam.IPAddress)
+
+		// タスクを作成（IPAddressが既に存在しているか、新たに作成されたものを使用）
+		newTask, err := model.CreateTask(taskParam.Title, taskParam.Description, taskParam.IPAddress)
 		if err != nil {
 			c.JSON(500, err.Error())
 		} else {
-			c.JSON(201, nil)
+			c.JSON(201, newTask)
 		}
-
 	})
 
 	//タスク一覧を受け取る
