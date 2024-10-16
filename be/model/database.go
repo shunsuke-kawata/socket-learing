@@ -93,12 +93,42 @@ func CreateAddress(ipAddress string) (*Address, error) {
 }
 
 // タスク新規登録
-func CreateTask(title string, description string, colorCode string, iPAddress string) (*Address, error) {
-	newAddress := &Task{}
-	if err := db.Debug().Create(newAddress).Error; err != nil {
+func CreateTask(title string, description string, iPAddress string) (*Task, error) {
+	address := &Address{}
+	// IPアドレスでAddressを検索
+	db.First(&address, "ip_address = ?", iPAddress)
+
+	// アドレスがデータベースにない時レコードを追加
+	if address.ID == 0 {
+		_, err := CreateAddress(iPAddress)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// アドレスを再度取得
+	db.First(&address, "ip_address = ?", iPAddress)
+
+	// StatusName が "Pending" の Status を取得
+	status := &Status{}
+	if err := db.First(&status, "status_name = ?", "Pending").Error; err != nil {
 		return nil, err
 	}
-	return newAddress, nil
+
+	// 新しいタスクを作成
+	newTask := &Task{
+		Title:       title,
+		Description: description,
+		StatusID:    status.ID,
+		AddressID:   address.ID,
+	}
+
+	// タスクをデータベースに保存
+	if err := db.Debug().Create(newTask).Error; err != nil {
+		return nil, err
+	}
+
+	return newTask, nil
 }
 
 func ReadStatus() ([]Status, error) {
