@@ -1,4 +1,4 @@
-const Message: React.FC = () => {
+const Message = () => {
   return <></>;
 };
 

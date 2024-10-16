@@ -1,0 +1,7 @@
+.flex-box {
+    display: flex;
+    gap: 20px; 
+    align-items: center; 
+    padding: 10px;
+  }
+  

@@ -1,4 +1,6 @@
-const TaskInfo: React.FC = () => {
+import { TaskInfoProps } from "../types/componentsPropsTypes";
+
+const TaskInfo: React.FC<TaskInfoProps> = ({ task }) => {
   return <></>;
 };
 

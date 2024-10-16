@@ -147,13 +147,6 @@ func CreateRouter() *gin.Engine {
 		}
 	})
 
-	//タスク一覧を受け取る
-
-	// //タスクを追加する
-	// router.POST("task",func(c *gin.Context)){
-
-	// }
-
 	// //タスクの内容を更新する
 	// router.PUT("task/:id",func(c *gin.Context)){
 
