@@ -137,7 +137,12 @@ func CreateRouter() *gin.Engine {
 		c.BindJSON(&taskParam)
 
 		//IPアドレスをヘッダーから取得
-		clientIP := c.ClientIP()
+		clientIP := c.GetHeader("X-Forwarded-For")
+		if clientIP == "" {
+			clientIP = c.ClientIP()
+		} else {
+			fmt.Println("forword", clientIP)
+		}
 		newTask, err := model.CreateTask(taskParam.Title, taskParam.Description, clientIP)
 		if err != nil {
 			c.JSON(500, err.Error())
