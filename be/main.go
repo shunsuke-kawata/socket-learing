@@ -20,7 +20,6 @@ type AddressParam struct {
 type TaskParam struct {
 	Title       string
 	Description string
-	IPAddress   string
 }
 
 // ルーターインスタンスを作成
@@ -136,10 +135,10 @@ func CreateRouter() *gin.Engine {
 	router.POST("/task", func(c *gin.Context) {
 		taskParam := TaskParam{}
 		c.BindJSON(&taskParam)
-		fmt.Println("endpoint", taskParam.IPAddress)
 
-		// タスクを作成（IPAddressが既に存在しているか、新たに作成されたものを使用）
-		newTask, err := model.CreateTask(taskParam.Title, taskParam.Description, taskParam.IPAddress)
+		//IPアドレスをヘッダーから取得
+		clientIP := c.ClientIP()
+		newTask, err := model.CreateTask(taskParam.Title, taskParam.Description, clientIP)
 		if err != nil {
 			c.JSON(500, err.Error())
 		} else {

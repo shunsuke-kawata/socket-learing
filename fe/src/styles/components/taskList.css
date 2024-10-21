@@ -1,8 +1,17 @@
 .flex-box {
     display: flex;
-    gap: 20px; 
-    align-items: flex-start; 
-    justify-content: center;
-    margin:20px;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: nowrap;
+    margin: 0 20px;
+  }
+  
+  
+
+@media (max-width: 768px) {
+    .flex-box {
+        flex-wrap: wrap; /* 小さい画面でも横に並べる */
+    }
+
 }
   

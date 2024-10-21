@@ -1,4 +1,5 @@
-// src/types.ts
+import { StringLiteral } from "typescript";
+
 export interface StatusNoAt {
   ID: number;
   StatusName: string;
@@ -18,4 +19,9 @@ export interface TaskNoAt {
   Status: StatusNoAt;
   AddressID: number;
   Address: AddressNoAt;
+}
+
+export interface TaskParam {
+  Title: String;
+  Description: string;
 }

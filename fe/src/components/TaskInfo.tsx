@@ -8,9 +8,7 @@ const TaskInfo: React.FC<TaskInfoProps> = ({ task }) => {
         className="circle"
         style={{ backgroundColor: task.Address.ColorCode }}
       ></div>
-      <p className="task-title">
-        {task.Title} <label>{task.Address.ColorCode}</label>
-      </p>
+      <p className="task-title">{task.Title}</p>
       <p className="task-description">{task.Description}</p>
     </div>
   );

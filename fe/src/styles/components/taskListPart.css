@@ -1,9 +1,37 @@
-.task-list-part{
-    height:540px;
+
+
+.task-list-part {
+    flex: 1; /* 各パーツが等しい幅を取る */
+    min-width: 0;
+    max-width: 33.33%; /* 各パーツが3分の1の幅を取る */
+    height: 540px;
     background-color: #dcdcdc;
     border-radius: 20px;
     padding: 0 10px;
+    box-sizing: border-box; /* paddingが幅に影響しないように */
 }
+  
+  @media (max-width: 1024px) {
+    .task-list-part {
+      max-width: 33.33%; /* 1024px以下でも3つ並ぶように調整 */
+    }
+  }
+  
+  @media (max-width: 768px) {
+  
+    .task-list-part {
+      flex-basis: calc(33.33% - 20px); /* 小さい画面でも3つ並ぶように調整 */
+      max-width: calc(33.33% - 20px);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .task-list-part {
+      flex-basis: 100%; /* 480px以下では1つずつ縦に並ぶ */
+      max-width: 100%;
+    }
+  }
+  
 
 .task-list-part-title{
     text-align: center;
@@ -15,4 +43,15 @@
     padding: 2px 0;
     overflow: scroll;
     height: 420px;
+}
+
+::-webkit-scrollbar{
+    background-color: #dcdcdc;
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background-color: rgba(3, 21, 157, 0.8);
+    width:8px;
+    border-radius: 4px;
 }
