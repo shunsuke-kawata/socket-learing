@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/shunsuke-kawata/socket-learning/model"
 )
 
@@ -22,8 +24,14 @@ type TaskParam struct {
 	Description string
 }
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
 // ルーターインスタンスを作成
 func CreateRouter() *gin.Engine {
+
 	// routerのインスタンスを作成
 	router := gin.Default()
 
@@ -43,6 +51,8 @@ func CreateRouter() *gin.Engine {
 			"Accept-Encoding",
 			"Authorization",
 		},
+		AllowCredentials: true,
+		AllowWebSockets:  true,
 	}))
 
 	router.GET("/", func(c *gin.Context) {
@@ -166,5 +176,32 @@ func CreateRouter() *gin.Engine {
 
 func main() {
 	router := CreateRouter()
+
+	//socket通信
+	router.GET("/ws", func(c *gin.Context) {
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			fmt.Println("WebSocket upgrade error:", err)
+			c.String(http.StatusBadRequest, "Failed to upgrade connection")
+			return
+		}
+		fmt.Println("WebSocket connection established.")
+		defer conn.Close()
+
+		for {
+			messageType, msg, err := conn.ReadMessage()
+			if err != nil {
+				fmt.Println("Error reading message:", err)
+				break
+			}
+			fmt.Printf("Received message: %s\n", msg)
+			err = conn.WriteMessage(messageType, msg)
+			if err != nil {
+				fmt.Println("Error writing message:", err)
+				break
+			}
+		}
+	})
+
 	router.Run(":" + os.Getenv("GO_PORT"))
 }

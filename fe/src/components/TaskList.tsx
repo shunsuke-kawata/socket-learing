@@ -13,7 +13,7 @@ const TaskList = () => {
   useEffect(() => {
     // タスク一覧の取得
     const getTasks = () => {
-      const url: string = `${config.backendUrl}/task`;
+      const url: string = `${config.BACKEND_URL}/task`;
       axios
         .get(url)
         .then((response) => {

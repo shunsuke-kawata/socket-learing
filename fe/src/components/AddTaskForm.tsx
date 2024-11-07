@@ -25,7 +25,7 @@ const AddTaskForm: React.FC = () => {
       Title: formRefs.current.taskTitle,
       Description: formRefs.current.taskDescription,
     };
-    const url: string = `${config.backendUrl}/task`;
+    const url: string = `${config.BACKEND_URL}/task`;
     axios
       .post(url, param)
       .then((response) => {
